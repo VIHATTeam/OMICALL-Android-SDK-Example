@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "956961781484",
+    "project_id": "example-sdk-omi",
+    "storage_bucket": "example-sdk-omi.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:956961781484:android:58ef928538d9bae07057c9",
+        "android_client_info": {
+          "package_name": "vn.vihat.omicall.sdk_example"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "956961781484-g9ij0cpv2sm9bun9mm9aj6pqsst8r8b7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrWtKMSs5Wz9tx60x1ri_bg5tmfqKebSU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "956961781484-g9ij0cpv2sm9bun9mm9aj6pqsst8r8b7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="vn.vihat.omicall.sdk_example.FirstFragment">
+
+    <TextView
+        android:id="@+id/txtTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Khởi tạo Omi SDK"
+        android:layout_marginTop="@dimen/margin_extra_big"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <EditText
+        android:id="@+id/txtUserName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/margin_small"
+        android:layout_marginHorizontal="@dimen/margin_medium"
+        android:hint="User Name"
+        android:text="112"
+        app:layout_constraintTop_toBottomOf="@id/txtTitle"/>
+
+    <EditText
+        android:id="@+id/txtPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_medium"
+        android:layout_marginVertical="@dimen/margin_small"
+        android:hint="Password"
+        android:text="kjO8XbGZZG"
+        app:layout_constraintTop_toBottomOf="@id/txtUserName"
+        tools:layout_editor_absoluteX="8dp" />
+
+    <EditText
+        android:id="@+id/txtRealm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_medium"
+        android:layout_marginVertical="@dimen/margin_small"
+        android:hint="Realm"
+        android:text="dky"
+        app:layout_constraintTop_toBottomOf="@id/txtPassword"
+        tools:layout_editor_absoluteX="8dp" />
+    <EditText
+        android:id="@+id/txtHost"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/margin_small"
+        android:layout_marginHorizontal="@dimen/margin_medium"
+        android:text="171.244.138.14"
+        app:layout_constraintTop_toBottomOf="@id/txtRealm"/>
+
+
+
+    <Button
+        android:id="@+id/btnInit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Khởi tạo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/txtTitle" />
+</androidx.constraintlayout.widget.ConstraintLayout>
