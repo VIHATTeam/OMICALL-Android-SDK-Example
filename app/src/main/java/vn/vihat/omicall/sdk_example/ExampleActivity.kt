@@ -152,7 +152,7 @@ class ExampleActivity : AppCompatActivity() {
                 else -> {}
             }
         }
-        installationViewModel.firebaseToken.observe(this) {
+        installationViewModel.firebaseTokenPublisher.observe(this) {
             when (it.status) {
 
                 Status.SUCCESS -> {
