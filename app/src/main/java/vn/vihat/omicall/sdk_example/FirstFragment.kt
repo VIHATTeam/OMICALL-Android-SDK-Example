@@ -44,15 +44,24 @@ class FirstFragment : Fragment(), OmiAccountListener {
                     binding.txtHost,
                 ).none { it.text.isNullOrEmpty() }
             ) {
+                OmiClient.instance.configPushNotification(
+                    prefix = "Cuộc gọi tới từ: ",
+                    declineTitle = "Từ chối",
+                    acceptTitle = "Chấp nhận",
+                    acceptBackgroundColor = "#FF3700B3",
+                    declineBackgroundColor = "#FF000000",
+                    incomingBackgroundColor = "#FFFFFFFF",
+                    incomingAcceptButtonImage = "join_call",
+                    incomingDeclineButtonImage = "hangup",
+                    backImage = "ic_back",
+                    userImage = "calling_face",
+                )
                 OmiClient.register(
-                    requireContext(),
                     binding.txtUserName.text.toString(),
                     binding.txtPassword.text.toString(),
                     true,
                     binding.txtRealm.text.toString(),
                     binding.txtHost.text.toString(),
-                    isTcp = true,
-                    customUI = true
                 )
                 OmiClient.instance.addAccountListener(this)
             } else {
