@@ -31,12 +31,12 @@ class SecondFragment : Fragment() {
 
     private fun updateToken() {
         val tokenProvider = (activity as ExampleActivity).tokenProvider
-        OmiClient.instance.updatePushToken(
-            "",
-            tokenProvider.getToken() ?: "",
-            tokenProvider.getDeviceId() ?: "",
-            BuildConfig.APPLICATION_ID,
-        )
+//        OmiClient.instance.updatePushToken(
+//            "",
+//            tokenProvider.getToken() ?: "",
+//            tokenProvider.getDeviceId() ?: "",
+//            BuildConfig.APPLICATION_ID,
+//        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

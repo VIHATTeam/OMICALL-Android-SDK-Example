@@ -104,7 +104,7 @@ class CallingActivity : AppCompatActivity() {
 
         if (inComing) {
             binding.acceptCallBt.setOnClickListener {
-                OmiClient.instance.pickUp(isVideo)
+                OmiClient.instance.pickUp()
             }
         }
 
@@ -122,7 +122,7 @@ class CallingActivity : AppCompatActivity() {
         }
 
         binding.micOnOffButton.setOnClickListener {
-            OmiClient.instance.toggleMute()
+//            OmiClient.instance.toggleMute()
         }
 
         binding.hangupButton.setOnClickListener {

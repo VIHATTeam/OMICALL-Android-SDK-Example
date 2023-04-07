@@ -22,7 +22,7 @@
         android:layout_marginVertical="@dimen/margin_small"
         android:layout_marginHorizontal="@dimen/margin_medium"
         android:hint="User Name"
-        android:text="112"
+        android:text="111"
         app:layout_constraintTop_toBottomOf="@id/txtTitle"/>
 
     <EditText
@@ -32,7 +32,7 @@
         android:layout_marginHorizontal="@dimen/margin_medium"
         android:layout_marginVertical="@dimen/margin_small"
         android:hint="Password"
-        android:text="kjO8XbGZZG"
+        android:text="JX7gmAJQys"
         app:layout_constraintTop_toBottomOf="@id/txtUserName"
         tools:layout_editor_absoluteX="8dp" />
 
@@ -43,7 +43,7 @@
         android:layout_marginHorizontal="@dimen/margin_medium"
         android:layout_marginVertical="@dimen/margin_small"
         android:hint="Realm"
-        android:text="dky"
+        android:text="thaonguyennguyen1197"
         app:layout_constraintTop_toBottomOf="@id/txtPassword"
         tools:layout_editor_absoluteX="8dp" />
     <EditText

@@ -41,6 +41,10 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+        <service
+            android:name="vn.vihat.omicall.omisdk.service.NotificationService"
+            android:exported="false">
+        </service>
     </application>
 
 </manifest>
