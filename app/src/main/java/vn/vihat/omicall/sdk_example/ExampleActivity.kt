@@ -2,6 +2,8 @@ package vn.vihat.omicall.sdk_example
 
 
 import android.Manifest
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.hardware.camera2.CameraManager
@@ -44,7 +46,7 @@ class ExampleActivity : AppCompatActivity() {
             callerId: Int,
             phoneNumber: String?,
             isVideo: Boolean?,
-            startTime: Long
+            startTime: Long,
         ) {
             if (CallingActivity.active) {
                 EventBus.getDefault().post(CallEstablishedEvent())
@@ -94,6 +96,10 @@ class ExampleActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityExampleBinding.inflate(layoutInflater)
+        OmiClient(this)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ActivityCompat.requestPermissions(
                 this,
@@ -121,13 +127,9 @@ class ExampleActivity : AppCompatActivity() {
             )
         }
         tokenProvider = TokenProvider(this)
-        binding = ActivityExampleBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        setSupportActionBar(binding.toolbar)
         val navController = findNavController(R.id.nav_host_fragment_content_example)
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
-        OmiClient(this)
         OmiClient.instance.setListener(callListener)
         val cm = getSystemService(Context.CAMERA_SERVICE) as CameraManager
         OmiClient.instance.setCameraManager(cm)
@@ -158,6 +160,10 @@ class ExampleActivity : AppCompatActivity() {
                 Status.SUCCESS -> {
                     tokenProvider.setDeviceId(installationId!!)
                     tokenProvider.setToken(it.data)
+                    val clipboard =
+                        baseContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    val clip = ClipData.newPlainText("Copied Tex", it.data)
+                    clipboard.setPrimaryClip(clip)
                 }
                 else -> {}
             }
@@ -166,6 +172,13 @@ class ExampleActivity : AppCompatActivity() {
         checkHasRegister()
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        if (intent.hasExtra(SipServiceConstants.PARAM_NUMBER)) {
+            //do your Stuff
+            Log.d("Aaa", "Aaaa")
+        }
+    }
 
     private fun checkHasRegister() {
         if (OmiClient.instance.getIsRegister()) {

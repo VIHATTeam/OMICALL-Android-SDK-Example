@@ -1,26 +1,34 @@
 package vn.vihat.omicall.sdk_example
 
 import android.Manifest
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.util.DisplayMetrics
+import android.util.Log
 import android.view.Surface
+import android.view.TextureView
 import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import vn.vihat.omicall.omisdk.OmiClient
+import vn.vihat.omicall.omisdk.videoutils.ScalableType
+import vn.vihat.omicall.omisdk.videoutils.ScaleManager
+import vn.vihat.omicall.omisdk.videoutils.Size
 import vn.vihat.omicall.omisdk.utils.SipServiceConstants
 import vn.vihat.omicall.sdk_example.databinding.ActivityCallingBinding
 import vn.vihat.omicall.sdk_example.event.CallEndEvent
 import vn.vihat.omicall.sdk_example.event.CallEstablishedEvent
-
 
 class CallingActivity : AppCompatActivity() {
 
@@ -30,6 +38,7 @@ class CallingActivity : AppCompatActivity() {
     private var addressString: String? = null
     private var phone: String? = null
     private var callId : Int = 0
+    private val mainScope = CoroutineScope(Dispatchers.Main)
 
     private fun setUIFromStatus(isInComing: Boolean) {
         if (isInComing) {
@@ -52,6 +61,14 @@ class CallingActivity : AppCompatActivity() {
         }
     }
 
+    private fun updateAudio(status: Boolean) {
+        if (status) {
+            binding.micOnOffButton.setImageDrawable(getDrawable(R.drawable.mic_off))
+        } else {
+            binding.micOnOffButton.setImageDrawable(getDrawable(R.drawable.mic))
+        }
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onCallEndEvent(event: CallEndEvent) {
         finish()
@@ -63,15 +80,16 @@ class CallingActivity : AppCompatActivity() {
         setUIFromStatus(false)
         binding.localTextureView.surfaceTexture?.let {
             OmiClient.instance.setupLocalVideoFeed(Surface(it))
-            binding.localTextureView.scaleX = 1.5F
-
+//            binding.localTextureView.setBackgroundColor(Color.TRANSPARENT);
+            ScaleManager.adjustAspectRatio(binding.localTextureView,Size(binding.localTextureView.width,binding.localTextureView.height),Size(1280,720))
         }
         binding.remoteTextureView.surfaceTexture?.let {
             OmiClient.instance.setupIncomingVideoFeed(Surface(it))
-            binding.remoteTextureView.scaleX = 1.5F
+//            binding.remoteTextureView.setBackgroundColor(Color.TRANSPARENT);
+
+            ScaleManager.adjustAspectRatio(binding.remoteTextureView,Size(binding.remoteTextureView.width,binding.remoteTextureView.height),Size(1280,720))
         }
     }
-
     override fun onStart() {
         active = true
         super.onStart()
@@ -122,7 +140,18 @@ class CallingActivity : AppCompatActivity() {
         }
 
         binding.micOnOffButton.setOnClickListener {
-//            OmiClient.instance.toggleMute()
+            mainScope.launch {
+                var result: Boolean? = null
+                withContext(Dispatchers.Default) {
+                    try {
+                        result = OmiClient.instance.toggleMute()
+                    } catch (_ : Throwable) {
+
+                    }
+                }
+                updateAudio(result ?: false)
+                Log.d("toggleResult", result.toString())
+            }
         }
 
         binding.hangupButton.setOnClickListener {

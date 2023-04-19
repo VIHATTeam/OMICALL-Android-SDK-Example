@@ -1,12 +1,14 @@
 package vn.vihat.omicall.sdk_example
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.*
 import vn.vihat.omicall.omisdk.OmiAccountListener
 import vn.vihat.omicall.omisdk.OmiClient
 import vn.vihat.omicall.omisdk.utils.OmiSDKUtils
@@ -23,6 +25,7 @@ class FirstFragment : Fragment(), OmiAccountListener {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+    private val mainScope = CoroutineScope(Dispatchers.Main)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,9 +42,8 @@ class FirstFragment : Fragment(), OmiAccountListener {
         binding.btnInit.setOnClickListener {
             if (arrayOf(
                     binding.txtUserName,
-                    binding.txtPassword,
-                    binding.txtRealm,
-                    binding.txtHost,
+                    binding.txtUserId,
+                    binding.txtApiKey,
                 ).none { it.text.isNullOrEmpty() }
             ) {
                 OmiClient.instance.configPushNotification(
@@ -55,15 +57,36 @@ class FirstFragment : Fragment(), OmiAccountListener {
                     incomingDeclineButtonImage = "hangup",
                     backImage = "ic_back",
                     userImage = "calling_face",
+                    missedCallTitle = "Cuộc gọi nhỡ",
+                    prefixMissedCallMessage = "Cuộc gọi nhỡ từ "
                 )
-                OmiClient.register(
-                    binding.txtUserName.text.toString(),
-                    binding.txtPassword.text.toString(),
-                    true,
-                    binding.txtRealm.text.toString(),
-                    binding.txtHost.text.toString(),
-                )
-                OmiClient.instance.addAccountListener(this)
+//                OmiClient.instance.addAccountListener(this)
+                mainScope.launch {
+                    withContext(Dispatchers.Default) {
+                        try {
+                            val result = OmiClient.registerWithApiKey(
+                                "",
+                                "chau1",
+                                "122aaa",
+                                true,
+                            )
+                            if (result) {
+                                findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+                            }
+                        }
+                        catch (_: Throwable) {
+
+                        }
+                    }
+
+                }
+//                val result = OmiClient.register(
+//                    "116",
+//                    password = "vWmFFBZwss",
+//                    true,
+//                    realm = "",
+//                )
+//                Log.d("aaa", result.toString())
             } else {
                 Toast.makeText(requireContext(), R.string.omi_sdk_empty, Toast.LENGTH_LONG).show()
             }

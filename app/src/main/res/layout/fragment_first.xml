@@ -22,38 +22,28 @@
         android:layout_marginVertical="@dimen/margin_small"
         android:layout_marginHorizontal="@dimen/margin_medium"
         android:hint="User Name"
-        android:text="111"
+        android:text="chaudeptrai1"
         app:layout_constraintTop_toBottomOf="@id/txtTitle"/>
 
     <EditText
-        android:id="@+id/txtPassword"
+        android:id="@+id/txtUserId"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_medium"
         android:layout_marginVertical="@dimen/margin_small"
-        android:hint="Password"
-        android:text="JX7gmAJQys"
+        android:hint="User Id"
+        android:text="100"
         app:layout_constraintTop_toBottomOf="@id/txtUserName"
         tools:layout_editor_absoluteX="8dp" />
 
     <EditText
-        android:id="@+id/txtRealm"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/margin_medium"
-        android:layout_marginVertical="@dimen/margin_small"
-        android:hint="Realm"
-        android:text="thaonguyennguyen1197"
-        app:layout_constraintTop_toBottomOf="@id/txtPassword"
-        tools:layout_editor_absoluteX="8dp" />
-    <EditText
-        android:id="@+id/txtHost"
+        android:id="@+id/txtApiKey"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginVertical="@dimen/margin_small"
         android:layout_marginHorizontal="@dimen/margin_medium"
-        android:text="171.244.138.14"
-        app:layout_constraintTop_toBottomOf="@id/txtRealm"/>
+        android:text="2deb1550-9855-4b53-8a18-bd0418104dd9-070d6b10"
+        app:layout_constraintTop_toBottomOf="@id/txtUserId"/>
 
 
 
