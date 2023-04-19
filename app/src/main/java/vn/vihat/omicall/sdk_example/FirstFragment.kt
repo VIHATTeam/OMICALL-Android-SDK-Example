@@ -60,7 +60,7 @@ class FirstFragment : Fragment(), OmiAccountListener {
                     missedCallTitle = "Cuộc gọi nhỡ",
                     prefixMissedCallMessage = "Cuộc gọi nhỡ từ "
                 )
-//                OmiClient.instance.addAccountListener(this)
+                OmiClient.instance.addAccountListener(this)
                 mainScope.launch {
                     withContext(Dispatchers.Default) {
                         try {

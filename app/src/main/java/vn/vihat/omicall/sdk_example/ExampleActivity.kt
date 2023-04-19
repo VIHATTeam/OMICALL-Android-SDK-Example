@@ -177,6 +177,8 @@ class ExampleActivity : AppCompatActivity() {
         if (intent.hasExtra(SipServiceConstants.PARAM_NUMBER)) {
             //do your Stuff
             Log.d("Aaa", "Aaaa")
+            val phone = intent.getStringExtra(SipServiceConstants.PARAM_NUMBER)
+            val isVideo = intent.getBooleanExtra(SipServiceConstants.PARAM_IS_VIDEO, false)
         }
     }
 
