@@ -120,13 +120,14 @@ You can refer <a href="https://github.com/VIHATTeam/OMICALL-Android-SDK-Example/
     </intent-filter>
 </activity>
 //add these lines outside <activity>
-<service
-    android:name="vn.vihat.omicall.omisdk.service.FMService"
-    android:exported="false">
+<receiver
+    android:name="vn.vihat.omicall.omisdk.receiver.FirebaseMessageReceiver"
+    android:exported="true"
+    android:permission="com.google.android.c2dm.permission.SEND">
     <intent-filter>
-        <action android:name="com.google.firebase.MESSAGING_EVENT" />
+        <action android:name="com.google.android.c2dm.intent.RECEIVE" />
     </intent-filter>
-</service>
+</receiver>
 <service
     android:name="vn.vihat.omicall.omisdk.service.NotificationService"
     android:exported="false">
