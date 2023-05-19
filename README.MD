@@ -16,7 +16,7 @@ Currently active maintenance and improve performance
 Install via build.gradle:
 
 ```
-api 'vn.vihat.omicall:omi-sdk:1.1.6'
+api 'vn.vihat.omicall:omi-sdk:1.2.37'
 ```
 
 ### Configuration
@@ -54,48 +54,20 @@ plugins {
 ```
 
 ```
-api 'vn.vihat.omicall:omi-sdk:1.1.6'
+api 'vn.vihat.omicall:omi-sdk:1.2.37'
 //    compileOnly files('libs/OmiSDK.aar')
-implementation 'androidx.core:core-ktx:1.7.0'
-implementation 'androidx.fragment:fragment-ktx:1.4.0'
-implementation 'androidx.activity:activity-ktx:1.4.0'
-implementation 'androidx.appcompat:appcompat:1.5.0'
-implementation 'com.google.android.material:material:1.6.1'
-implementation 'com.google.android.flexbox:flexbox:3.0.0'
-implementation "com.google.code.gson:gson:2.8.6"
-def lifecycle_version = "2.4.0"
-implementation "androidx.lifecycle:lifecycle-viewmodel:$lifecycle_version"
-implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
-implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2'
-implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.4.0"
-implementation 'androidx.databinding:viewbinding:7.1.2'
-implementation("com.squareup.retrofit2:retrofit:2.9.0") {
-exclude module: 'okhttp'
-}
-implementation "com.squareup.retrofit2:converter-gson:2.9.0"
-implementation "com.squareup.okhttp3:okhttp:4.9.1"
-implementation "com.squareup.okhttp3:okhttp-urlconnection:4.9.1"
-implementation "com.squareup.okhttp3:logging-interceptor:4.9.1"
-implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
-implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
-implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
-implementation 'com.google.firebase:firebase-messaging-ktx:23.0.8'
-implementation 'androidx.core:core-ktx:1.7.0'
-implementation 'androidx.appcompat:appcompat:1.5.0'
 implementation 'com.google.android.material:material:1.6.1'
 implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 implementation 'androidx.navigation:navigation-fragment-ktx:2.5.1'
 implementation 'androidx.navigation:navigation-ui-ktx:2.5.1'
-implementation 'com.google.android.flexbox:flexbox:3.0.0'
-implementation "com.google.code.gson:gson:2.8.6"
-implementation 'androidx.core:core-ktx:1.7.0'
-testImplementation 'junit:junit:4.13.2'
-androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+implementation "com.google.code.gson:gson:2.8.9"
+implementation 'com.google.firebase:firebase-messaging-ktx:23.1.2'
 implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2'
 implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.4.0"
 implementation platform('com.google.firebase:firebase-bom:31.2.3')
-implementation 'com.google.firebase:firebase-analytics-ktx:21.2.0'
+implementation 'com.google.firebase:firebase-messaging-ktx:23.1.2'
+implementation "androidx.security:security-crypto:1.1.0-alpha06"
+implementation("org.greenrobot:eventbus:3.3.1")
 //in dependencies
 ```
 
@@ -108,21 +80,31 @@ You can refer <a href="https://github.com/VIHATTeam/OMICALL-Android-SDK-Example/
 <uses-permission android:name="android.permission.INTERNET" />
 //your activity => calling activity
 <activity
-    android:name="vn.vihat.omicall.sdk_example.CallingActivity"
+    android:name="vn.vihat.omicall.sdk_example.ExampleActivity"
     android:exported="true"
-    android:launchMode="singleTop"
-    android:showOnLockScreen="true"
     android:label="@string/app_name"
     android:theme="@style/Theme.OMICall">
     <intent-filter>
         <action android:name="com.omicall.sdk.CallingActivity"/>
         <category android:name="android.intent.category.DEFAULT" />
     </intent-filter>
+    <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+    </intent-filter>
 </activity>
-//add these lines outside <activity>
+<activity
+    android:name="vn.vihat.omicall.sdk_example.CallingActivity"
+    android:exported="true"
+    android:launchMode="singleTop"
+    android:showOnLockScreen="true"
+    android:label="@string/app_name"
+    android:theme="@style/Theme.OMICall">
+</activity>
 <receiver
     android:name="vn.vihat.omicall.omisdk.receiver.FirebaseMessageReceiver"
     android:exported="true"
+    android:enabled="true"
     android:permission="com.google.android.c2dm.permission.SEND">
     <intent-filter>
         <action android:name="com.google.android.c2dm.intent.RECEIVE" />
@@ -130,6 +112,7 @@ You can refer <a href="https://github.com/VIHATTeam/OMICALL-Android-SDK-Example/
 </receiver>
 <service
     android:name="vn.vihat.omicall.omisdk.service.NotificationService"
+    android:enabled="true"
     android:exported="false">
 </service>
 ```
@@ -167,9 +150,6 @@ You can refer <a href="https://github.com/VIHATTeam/OMICALL-Android-SDK-Example/
     ```
     //Call in the root activity
     OmiClient(this);
-    //use only video call
-    val cm = getSystemService(Context.CAMERA_SERVICE) as CameraManager
-    OmiClient.instance.setCameraManager(cm)
     ```
   - Create OmiKit: OmiKit need userName, password, realm, host to init enviroment. ViHAT Group will provides these informations for you. Please contact for my sales:
     ```
@@ -195,19 +175,17 @@ You can refer <a href="https://github.com/VIHATTeam/OMICALL-Android-SDK-Example/
   - Config push notification:
     ```
     OmiClient.instance.configPushNotification(
-      prefix : "Cuộc gọi tới từ: ",
-      declineTitle : "Từ chối",
-      acceptTitle : "Chấp nhận",
-      acceptBackgroundColor : "#FF3700B3",
-      declineBackgroundColor : "#FF000000",
-      incomingBackgroundColor : "#FFFFFFFF",
-      incomingAcceptButtonImage : "join_call", //image name
-      incomingDeclineButtonImage : "hangup", //image name
-      backImage : "ic_back", //image name: icon of back button
-      userImage : "calling_face", //image name: icon of user default
-      prefixMissedCallMessage: 'Cuộc gọi nhỡ từ' //config prefix message for the missed call
-      missedCallTitle: 'Cuộc gọi nhỡ' //config title for the missed call
-    );
+        notificationIcon = "notification",
+        prefix = "Cuộc gọi tới từ: ",
+        incomingBackgroundColor = "#FFFFFFFF",
+        incomingAcceptButtonImage = "join_call",
+        incomingDeclineButtonImage = "hangup",
+        backImage = "ic_back",
+        userImage = "calling_face",
+        missedCallTitle = "Cuộc gọi nhỡ",
+        prefixMissedCallMessage = "Cuộc gọi nhỡ từ ",
+        userNameKey = "uuid", //we have 3 values: uuid, full_name, extension.
+    )
     //incomingAcceptButtonImage, incomingDeclineButtonImage, backImage, userImage: Add these into `android/app/src/main/res/drawble`
     ```
   - Upload token: OmiKit need FCM for Android and APNS to push notification on user devices.
