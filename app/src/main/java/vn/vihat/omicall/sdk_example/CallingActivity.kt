@@ -21,7 +21,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import vn.vihat.omicall.omisdk.OmiClient
-import vn.vihat.omicall.omisdk.service.FMService
+import vn.vihat.omicall.omisdk.service.NotificationService
 import vn.vihat.omicall.omisdk.utils.SipServiceConstants
 import vn.vihat.omicall.omisdk.videoutils.ScaleManager
 import vn.vihat.omicall.omisdk.videoutils.Size
@@ -46,7 +46,7 @@ class CallingActivity : AppCompatActivity() {
         } else {
             binding.pannelConfirm.visibility = View.INVISIBLE
             binding.pannelCalling.visibility = View.VISIBLE
-            if (FMService.isVideo) {
+            if (NotificationService.isVideo) {
                 binding.switchCameraButton.visibility = View.VISIBLE
                 binding.localTextureView.visibility = View.VISIBLE
                 binding.remoteTextureView.visibility = View.VISIBLE
@@ -72,27 +72,27 @@ class CallingActivity : AppCompatActivity() {
     @Subscribe
     fun onCallEstablishedEvent(event: CallEstablishedEvent) {
         setUIFromStatus(false)
-       if (FMService.isVideo) {
-           binding.localTextureView.surfaceTexture?.let {
-               OmiClient.instance.setupLocalVideoFeed(Surface(it))
+        if (NotificationService.isVideo) {
+            binding.localTextureView.surfaceTexture?.let {
+                OmiClient.instance.setupLocalVideoFeed(Surface(it))
 //            binding.localTextureView.setBackgroundColor(Color.TRANSPARENT);
-               ScaleManager.adjustAspectRatio(
-                   binding.localTextureView,
-                   Size(binding.localTextureView.width, binding.localTextureView.height),
-                   Size(1280, 720)
-               )
-           }
-           binding.remoteTextureView.surfaceTexture?.let {
-               OmiClient.instance.setupIncomingVideoFeed(Surface(it))
+                ScaleManager.adjustAspectRatio(
+                    binding.localTextureView,
+                    Size(binding.localTextureView.width, binding.localTextureView.height),
+                    Size(1280, 720)
+                )
+            }
+            binding.remoteTextureView.surfaceTexture?.let {
+                OmiClient.instance.setupIncomingVideoFeed(Surface(it))
 //            binding.remoteTextureView.setBackgroundColor(Color.TRANSPARENT);
 
-               ScaleManager.adjustAspectRatio(
-                   binding.remoteTextureView,
-                   Size(binding.remoteTextureView.width, binding.remoteTextureView.height),
-                   Size(1280, 720)
-               )
-           }
-       }
+                ScaleManager.adjustAspectRatio(
+                    binding.remoteTextureView,
+                    Size(binding.remoteTextureView.width, binding.remoteTextureView.height),
+                    Size(1280, 720)
+                )
+            }
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

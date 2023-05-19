@@ -148,7 +148,7 @@ class ExampleActivity : AppCompatActivity() {
             missedCallTitle = "Cuộc gọi nhỡ",
             prefixMissedCallMessage = "Cuộc gọi nhỡ từ ",
             userNameKey = "uuid",
-            channelId = "call.channel.sample"
+            channelId = "callchannelsample"
         )
     }
 
