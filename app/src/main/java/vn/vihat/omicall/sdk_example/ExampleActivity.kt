@@ -2,13 +2,10 @@ package vn.vihat.omicall.sdk_example
 
 
 import android.Manifest
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.content.Intent
-import android.hardware.camera2.CameraManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -19,27 +16,20 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import org.greenrobot.eventbus.EventBus
 import vn.vihat.omicall.omisdk.OmiClient
 import vn.vihat.omicall.omisdk.OmiListener
-import vn.vihat.omicall.omisdk.utils.FirebaseUtils
 import vn.vihat.omicall.omisdk.utils.SipServiceConstants
-import vn.vihat.omicall.omisdk.utils.Status
-import vn.vihat.omicall.omisdk.utils.TokenProvider
 import vn.vihat.omicall.sdk_example.databinding.ActivityExampleBinding
 import vn.vihat.omicall.sdk_example.event.CallEndEvent
 import vn.vihat.omicall.sdk_example.event.CallEstablishedEvent
-import javax.inject.Inject
 
 class ExampleActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityExampleBinding
-    private val installationViewModel = FirebaseUtils()
-    private var installationId: String? = null
-
-    @Inject
-    lateinit var tokenProvider: TokenProvider
 
     private val callListener = object : OmiListener {
-        override fun onConnectionTimeout() {
+
+        override fun onCallEnd(callInfo: Any?) {
+            EventBus.getDefault().post(CallEndEvent())
         }
 
         override fun onCallEstablished(
@@ -47,8 +37,9 @@ class ExampleActivity : AppCompatActivity() {
             phoneNumber: String?,
             isVideo: Boolean?,
             startTime: Long,
+            transactionId: String?,
         ) {
-            if (CallingActivity.active) {
+            if (CallingActivity.instance != null) {
                 EventBus.getDefault().post(CallEstablishedEvent())
             } else {
                 val intent = Intent(applicationContext, CallingActivity::class.java)
@@ -57,10 +48,6 @@ class ExampleActivity : AppCompatActivity() {
                 intent.putExtra(SipServiceConstants.PARAM_IS_VIDEO, isVideo ?: false)
                 startActivity(intent)
             }
-        }
-
-        override fun onCallEnd() {
-            EventBus.getDefault().post(CallEndEvent())
         }
 
         override fun incomingReceived(callerId: Int, phoneNumber: String?, isVideo: Boolean?) {
@@ -88,8 +75,16 @@ class ExampleActivity : AppCompatActivity() {
 
         }
 
+        override fun onConnectionTimeout() {
+
+        }
+
         override fun onVideoSize(width: Int, height: Int) {
 
+        }
+
+        override fun onSwitchBoardAnswer(sip: String) {
+            Log.d("aa", sip);
         }
     }
 
@@ -126,61 +121,43 @@ class ExampleActivity : AppCompatActivity() {
                 0,
             )
         }
-        tokenProvider = TokenProvider(this)
+        // Check if Android M or higher
+        // Check if Android M or higher
+        if (!Settings.canDrawOverlays(this)) {
+            // You don't have permission
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                // Show alert dialog to the user saying a separate permission is needed
+                // Launch the settings activity if the user prefers
+                val myIntent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
+                startActivity(myIntent)
+            }
+        }
         val navController = findNavController(R.id.nav_host_fragment_content_example)
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
         OmiClient.instance.setListener(callListener)
-        val cm = getSystemService(Context.CAMERA_SERVICE) as CameraManager
-        OmiClient.instance.setCameraManager(cm)
-//        val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-//        val outputs = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-//            val microphones = audioManager.microphones
-//            Log.d("AudioManager", "===>>> microphones:" + microphones.map { it.description + " | " + it.type }.toString())
-//        }
-        installationViewModel.getFirebaseInstallationsId()
-
-        installationViewModel.installationId.observe(this) {
-            when (it.status) {
-                Status.ERROR -> {
-                    Log.d("error message Firebase", " error firebase: " + it.data)
-
-                }
-                Status.SUCCESS -> {
-                    installationId = it.data
-                    installationViewModel.getFirebaseToken()
-                }
-                else -> {}
-            }
-        }
-        installationViewModel.firebaseTokenPublisher.observe(this) {
-            when (it.status) {
-
-                Status.SUCCESS -> {
-                    tokenProvider.setDeviceId(installationId!!)
-                    tokenProvider.setToken(it.data)
-                    val clipboard =
-                        baseContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    val clip = ClipData.newPlainText("Copied Tex", it.data)
-                    clipboard.setPrimaryClip(clip)
-                }
-                else -> {}
-            }
-        }
-//        Log.d("AudioManager", "===>>> outputs:" + outputs.map { it.type.toString() + " | " + it.productName }.toString())
         checkHasRegister()
+        OmiClient.instance.configPushNotification(
+            notificationIcon = "notification",
+            prefix = "Cuộc gọi tới từ: ",
+            incomingBackgroundColor = "#FFFFFFFF",
+            incomingAcceptButtonImage = "join_call",
+            incomingDeclineButtonImage = "hangup",
+            backImage = "ic_back",
+            userImage = "calling_face",
+            missedCallTitle = "Cuộc gọi nhỡ",
+            prefixMissedCallMessage = "Cuộc gọi nhỡ từ ",
+            userNameKey = "uuid"
+        )
     }
 
-    override fun onNewIntent(intent: Intent) {
-        super.onNewIntent(intent)
-        if (intent.hasExtra(SipServiceConstants.PARAM_NUMBER)) {
-            //do your Stuff
-            Log.d("Aaa", "Aaaa")
-            val phone = intent.getStringExtra(SipServiceConstants.PARAM_NUMBER)
-            val isVideo = intent.getBooleanExtra(SipServiceConstants.PARAM_IS_VIDEO, false)
-        }
-    }
+//    override fun onNewIntent(intent: Intent) {
+//        super.onNewIntent(intent)
+//        if (intent.hasExtra(SipServiceConstants.PARAM_NUMBER)) {
+//            //do your Stuff
+//            Log.d("Aaa", "Aaaa")
+//        }
+//    }
 
     private fun checkHasRegister() {
         if (OmiClient.instance.getIsRegister()) {

@@ -8,7 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import kotlinx.coroutines.*
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import vn.vihat.omicall.omisdk.OmiClient
 import vn.vihat.omicall.omisdk.utils.SipServiceConstants
 import vn.vihat.omicall.sdk_example.databinding.FragmentSecondBinding
@@ -34,20 +39,25 @@ class SecondFragment : Fragment() {
     }
 
     private fun updateToken() {
-        GlobalScope.launch {
-            withContext(Dispatchers.Main) {
-                try {
-                    val tokenProvider = (activity as ExampleActivity).tokenProvider
-                    OmiClient.instance.updatePushToken(
-                        "",
-                        tokenProvider.getToken() ?: "",
-                    )
-                    Log.d("aaa", tokenProvider.getToken() ?: "")
-                } catch (e: Throwable) {
-                    Log.d("OmiKit", "Caught exception: $e")
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                return@OnCompleteListener
+            }
+            // Get new FCM registration token
+            val token = task.result
+            mainScope.launch {
+                withContext(Dispatchers.Main) {
+                    try {
+                        OmiClient.instance.updatePushToken(
+                            "",
+                            firebaseToken = token,
+                        )
+                    } catch (e: Throwable) {
+                        Log.d("OmiKit", "Caught exception: $e")
+                    }
                 }
             }
-        }
+        })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -57,7 +67,7 @@ class SecondFragment : Fragment() {
 //            mainScope.launch {
 //                withContext(Dispatchers.Default) {
 //                    val result = OmiClient.instance.startCallWithUuid(
-//                        "123aaa",
+//                        "${binding.txtPhone.text}",
 //                        true,
 //                    )
 //                }
@@ -66,12 +76,13 @@ class SecondFragment : Fragment() {
 //                intent.putExtra(SipServiceConstants.PARAM_IS_VIDEO, true)
 //                startActivity(intent)
 //            }
-            OmiClient.instance.startCall("110",
-                isVideo = false
+            val isVideo = binding.switchIsVideo.isChecked
+            OmiClient.instance.startCall("${binding.txtPhone.text}",
+                isVideo = isVideo
             )
             val intent = Intent(context, CallingActivity::class.java)
-            intent.putExtra(SipServiceConstants.PARAM_NUMBER, binding.txtPhone.text.toString())
-            intent.putExtra(SipServiceConstants.PARAM_IS_VIDEO, false)
+            intent.putExtra(SipServiceConstants.PARAM_NUMBER, "${binding.txtPhone.text}")
+            intent.putExtra(SipServiceConstants.PARAM_IS_VIDEO, isVideo)
             startActivity(intent)
         }
         binding.btnLogout.setOnClickListener {

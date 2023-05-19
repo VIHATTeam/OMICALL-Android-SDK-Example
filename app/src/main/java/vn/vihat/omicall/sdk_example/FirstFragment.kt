@@ -1,14 +1,16 @@
 package vn.vihat.omicall.sdk_example
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import vn.vihat.omicall.omisdk.OmiAccountListener
 import vn.vihat.omicall.omisdk.OmiClient
 import vn.vihat.omicall.omisdk.utils.OmiSDKUtils
@@ -46,29 +48,14 @@ class FirstFragment : Fragment(), OmiAccountListener {
                     binding.txtApiKey,
                 ).none { it.text.isNullOrEmpty() }
             ) {
-                OmiClient.instance.configPushNotification(
-                    prefix = "Cuộc gọi tới từ: ",
-                    declineTitle = "Từ chối",
-                    acceptTitle = "Chấp nhận",
-                    acceptBackgroundColor = "#FF3700B3",
-                    declineBackgroundColor = "#FF000000",
-                    incomingBackgroundColor = "#FFFFFFFF",
-                    incomingAcceptButtonImage = "join_call",
-                    incomingDeclineButtonImage = "hangup",
-                    backImage = "ic_back",
-                    userImage = "calling_face",
-                    missedCallTitle = "Cuộc gọi nhỡ",
-                    prefixMissedCallMessage = "Cuộc gọi nhỡ từ "
-                )
-                OmiClient.instance.addAccountListener(this)
                 mainScope.launch {
                     withContext(Dispatchers.Default) {
                         try {
                             val result = OmiClient.registerWithApiKey(
-                                "",
-                                "chau1",
-                                "122aaa",
-                                true,
+                                "${binding.txtApiKey.text}",
+                                "${binding.txtUserName.text}",
+                                "${binding.txtUserId.text}",
+                                binding.switchIsVideo.isChecked,
                             )
                             if (result) {
                                 findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
@@ -84,9 +71,8 @@ class FirstFragment : Fragment(), OmiAccountListener {
 //                    "116",
 //                    password = "vWmFFBZwss",
 //                    true,
-//                    realm = "",
+//                    realm = "thaonguyennguyen1197",
 //                )
-//                Log.d("aaa", result.toString())
             } else {
                 Toast.makeText(requireContext(), R.string.omi_sdk_empty, Toast.LENGTH_LONG).show()
             }

@@ -7,4 +7,29 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="divider">#f5f6fa</color>
+    <color name="divider_blue">#f5f6fa</color>
+    <color name="green_10">#1a32b366</color>
+    <color name="green">#32b366</color>
+    <color name="red">#ff5955</color>
+    <color name="red_10">#1aff5955</color>
+    <color name="checkbox_selected">#1468ee</color>
+    <color name="main_color">#1e3150</color>
+
+    <color name="core_main_btn_color">#1468ee</color>
+    <color name="core_main_btn_color_pressed">#CC4E91FB</color>
+    <color name="core_secondary_button_color">#f5f6fa</color>
+    <color name="core_secondary_button_color_pressed">#ccf5f6fa</color>
+    <color name="white_10">#1affffff</color>
+    <color name="white_50">#88ffffff</color>
+
+
+    <color name="core_avatar_bg_color_1">#3000B1FF</color>
+    <color name="core_avatar_bg_color_2">#3056CC6E</color>
+    <color name="core_avatar_bg_color_3">#30ff5955</color>
+    <color name="core_avatar_bg_color_4">#30fea220</color>
+    <color name="core_avatar_bg_color_5">#30a540b8</color>
+    <color name="core_avatar_bg_color_6">#3057bfdb</color>
+    <color name="core_avatar_bg_color_7">#30e82a8f</color>
+    <color name="core_avatar_bg_color_8">#301e3150</color>
 </resources>

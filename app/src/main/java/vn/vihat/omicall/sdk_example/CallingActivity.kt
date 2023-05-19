@@ -2,14 +2,13 @@ package vn.vihat.omicall.sdk_example
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.preference.PreferenceManager
-import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Surface
-import android.view.TextureView
 import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
@@ -22,10 +21,10 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import vn.vihat.omicall.omisdk.OmiClient
-import vn.vihat.omicall.omisdk.videoutils.ScalableType
+import vn.vihat.omicall.omisdk.service.FMService
+import vn.vihat.omicall.omisdk.utils.SipServiceConstants
 import vn.vihat.omicall.omisdk.videoutils.ScaleManager
 import vn.vihat.omicall.omisdk.videoutils.Size
-import vn.vihat.omicall.omisdk.utils.SipServiceConstants
 import vn.vihat.omicall.sdk_example.databinding.ActivityCallingBinding
 import vn.vihat.omicall.sdk_example.event.CallEndEvent
 import vn.vihat.omicall.sdk_example.event.CallEstablishedEvent
@@ -34,7 +33,6 @@ class CallingActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCallingBinding
     private var inComing: Boolean = false
-    private var isVideo: Boolean = false
     private var addressString: String? = null
     private var phone: String? = null
     private var callId : Int = 0
@@ -48,15 +46,16 @@ class CallingActivity : AppCompatActivity() {
         } else {
             binding.pannelConfirm.visibility = View.INVISIBLE
             binding.pannelCalling.visibility = View.VISIBLE
-            if (isVideo) {
+            if (FMService.isVideo) {
                 binding.switchCameraButton.visibility = View.VISIBLE
                 binding.localTextureView.visibility = View.VISIBLE
                 binding.remoteTextureView.visibility = View.VISIBLE
-                binding.incallAvatar.visibility = View.GONE
-                binding.switchCameraButton.visibility = View.VISIBLE
+                binding.incallAvatar.visibility = View.INVISIBLE
             } else {
                 binding.switchCameraButton.visibility = View.INVISIBLE
                 binding.incallAvatar.visibility = View.VISIBLE
+                binding.localTextureView.visibility = View.INVISIBLE
+                binding.remoteTextureView.visibility = View.INVISIBLE
             }
         }
     }
@@ -69,35 +68,43 @@ class CallingActivity : AppCompatActivity() {
         }
     }
 
+    // This method will be called when a SomeOtherEvent is posted
+    @Subscribe
+    fun onCallEstablishedEvent(event: CallEstablishedEvent) {
+        setUIFromStatus(false)
+       if (FMService.isVideo) {
+           binding.localTextureView.surfaceTexture?.let {
+               OmiClient.instance.setupLocalVideoFeed(Surface(it))
+//            binding.localTextureView.setBackgroundColor(Color.TRANSPARENT);
+               ScaleManager.adjustAspectRatio(
+                   binding.localTextureView,
+                   Size(binding.localTextureView.width, binding.localTextureView.height),
+                   Size(1280, 720)
+               )
+           }
+           binding.remoteTextureView.surfaceTexture?.let {
+               OmiClient.instance.setupIncomingVideoFeed(Surface(it))
+//            binding.remoteTextureView.setBackgroundColor(Color.TRANSPARENT);
+
+               ScaleManager.adjustAspectRatio(
+                   binding.remoteTextureView,
+                   Size(binding.remoteTextureView.width, binding.remoteTextureView.height),
+                   Size(1280, 720)
+               )
+           }
+       }
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onCallEndEvent(event: CallEndEvent) {
         finish()
     }
 
-    // This method will be called when a SomeOtherEvent is posted
-    @Subscribe
-    fun onCallEstablishedEvent(event: CallEstablishedEvent) {
-        setUIFromStatus(false)
-        binding.localTextureView.surfaceTexture?.let {
-            OmiClient.instance.setupLocalVideoFeed(Surface(it))
-//            binding.localTextureView.setBackgroundColor(Color.TRANSPARENT);
-            ScaleManager.adjustAspectRatio(binding.localTextureView,Size(binding.localTextureView.width,binding.localTextureView.height),Size(1280,720))
-        }
-        binding.remoteTextureView.surfaceTexture?.let {
-            OmiClient.instance.setupIncomingVideoFeed(Surface(it))
-//            binding.remoteTextureView.setBackgroundColor(Color.TRANSPARENT);
-
-            ScaleManager.adjustAspectRatio(binding.remoteTextureView,Size(binding.remoteTextureView.width,binding.remoteTextureView.height),Size(1280,720))
-        }
-    }
-    override fun onStart() {
-        active = true
-        super.onStart()
-    }
 
     override fun onStop() {
         EventBus.getDefault().unregister(this)
-        active = false
+        OmiClient.instance.stopVideoPreview()
+        instance = null
         super.onStop()
     }
 
@@ -105,29 +112,40 @@ class CallingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         EventBus.getDefault().register(this)
         binding = ActivityCallingBinding.inflate(layoutInflater)
-
         setContentView(binding.root)
-
         phone = intent?.getStringExtra(SipServiceConstants.PARAM_NUMBER)
         inComing = intent!!.getBooleanExtra(EXTRA_IN_COMING, false)
-        isVideo = intent!!.getBooleanExtra(SipServiceConstants.PARAM_IS_VIDEO,false)
         callId = intent?.getIntExtra(SipServiceConstants.PARAM_CALL_ID,0) ?: 0
         inComing = intent!!.getBooleanExtra(EXTRA_IN_COMING, false)
-
         setUIFromStatus(inComing)
+        instance = this
         binding.backButton.setOnClickListener {
             OmiClient.instance.hangUp()
             finish()
         }
-
         if (inComing) {
             binding.acceptCallBt.setOnClickListener {
                 OmiClient.instance.pickUp()
             }
+        } else {
+            Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                binding.localTextureView.surfaceTexture?.let {
+                    OmiClient.instance.setupLocalVideoFeed(Surface(it))
+//            binding.localTextureView.setBackgroundColor(Color.TRANSPARENT);
+                    ScaleManager.adjustAspectRatio(binding.localTextureView,Size(binding.localTextureView.width,binding.localTextureView.height),Size(1280,720))
+                }
+                binding.remoteTextureView.surfaceTexture?.let {
+                    OmiClient.instance.setupIncomingVideoFeed(Surface(it))
+//            binding.remoteTextureView.setBackgroundColor(Color.TRANSPARENT);
+
+                    ScaleManager.adjustAspectRatio(binding.remoteTextureView,Size(binding.remoteTextureView.width,binding.remoteTextureView.height),Size(1280,720))
+                }
+            }, 500)
         }
 
         binding.hangupButtonWhenConfirm.setOnClickListener {
             OmiClient.instance.hangUp()
+            instance = null
             finish()
         }
 
@@ -144,7 +162,7 @@ class CallingActivity : AppCompatActivity() {
                 var result: Boolean? = null
                 withContext(Dispatchers.Default) {
                     try {
-                        result = OmiClient.instance.toggleMute()
+                        result = OmiClient.instance.toggleSpeaker()
                     } catch (_ : Throwable) {
 
                     }
@@ -172,18 +190,6 @@ class CallingActivity : AppCompatActivity() {
                 show()
             }
         }
-        setupSIP()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-            setShowWhenLocked(true)
-            setTurnScreenOn(true)
-        }
-        window.addFlags(
-            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
-                    or WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
-                    or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-                    or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-                    or WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON
-        )
     }
 
     private fun showAudioInputs() {
@@ -215,34 +221,10 @@ class CallingActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupSIP() {
-        val pref = PreferenceManager.getDefaultSharedPreferences(this)
-        val realm = pref.getString("realm", null)
-        if (phone != null) {
-            addressString = "sip:$phone@$realm"
-        }
-
-        if (packageManager.checkPermission(
-                Manifest.permission.RECORD_AUDIO,
-                packageName
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(
-                    arrayOf(Manifest.permission.RECORD_AUDIO),
-                    REQUEST_PERMISSION
-                )
-            }
-            finish()
-            return
-        }
-
-    }
-
     companion object {
         const val REQUEST_PERMISSION = 100
         const val EXTRA_IN_COMING = "extra_in_coming"
-        var active = false
+        var instance : CallingActivity? = null
     }
 
 

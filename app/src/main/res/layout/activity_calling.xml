@@ -51,6 +51,7 @@
         app:srcCompat="@drawable/voice_avatar_place_holder" />
 
     <LinearLayout
+        android:gravity="center"
         android:id="@+id/pannelCalling"
         android:layout_width="match_parent"
         android:layout_height="80dp"
@@ -65,10 +66,9 @@
 
         <ImageButton
             android:id="@+id/micOnOffButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_gravity="center"
-            android:layout_weight="0.5"
             android:background="@null"
             android:scaleType="centerInside"
             app:srcCompat="@drawable/mic" />
@@ -79,10 +79,9 @@
 
         <ImageButton
             android:id="@+id/videoOnOffButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_gravity="center"
-            android:layout_weight="0.5"
             android:background="@null"
             android:scaleType="centerInside"
             app:srcCompat="@drawable/video" />
@@ -93,10 +92,9 @@
 
         <ImageButton
             android:id="@+id/hangupButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_gravity="center"
-            android:layout_weight="0.5"
             android:background="@null"
             android:scaleType="centerInside"
             app:srcCompat="@drawable/hangup" />
@@ -107,10 +105,9 @@
 
         <ImageButton
             android:id="@+id/moreButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_gravity="center"
-            android:layout_weight="0.5"
             android:background="@null"
             android:scaleType="centerInside"
             app:srcCompat="@drawable/more" />

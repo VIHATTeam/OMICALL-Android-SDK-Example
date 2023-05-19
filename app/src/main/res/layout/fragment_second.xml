@@ -12,15 +12,25 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_big"
         android:hint="Phone"
-        android:text="101"
+        android:text="110"
         app:layout_constraintBottom_toTopOf="@id/btnCall"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Switch
+        app:layout_constraintTop_toBottomOf="@+id/txtPhone"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:id="@+id/switchIsVideo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Video call" />
+
     <Button
         android:id="@+id/btnCall"
-        android:layout_width="wrap_content"
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
         android:text="Gọi"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -29,7 +39,8 @@
         app:layout_constraintTop_toBottomOf="@id/txtPhone" />
     <Button
         android:id="@+id/btnLogout"
-        android:layout_width="wrap_content"
+        android:layout_width="160dp"
+        android:layout_marginTop="24dp"
         android:layout_height="wrap_content"
         android:text="Đăng xuất"
         app:layout_constraintEnd_toEndOf="parent"

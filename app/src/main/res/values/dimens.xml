@@ -1,3 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="margin_extra_big">24dip</dimen>
+    <dimen name="margin_big">16dip</dimen>
+    <dimen name="margin_super_big">24dip</dimen>
+    <dimen name="padding_big">16dip</dimen>
+    <dimen name="padding_medium">8dip</dimen>
+    <dimen name="padding_medium_small">4dip</dimen>
+    <dimen name="margin_medium">8dip</dimen>
+    <dimen name="margin_small">4dip</dimen>
+
+    <dimen name="txt_large">17sp</dimen>
+    <dimen name="txt_s_large">16sp</dimen>
+    <dimen name="txt_medium">15sp</dimen>
+    <dimen name="txt_s_medium">14sp</dimen>
+    <dimen name="txt_small">13sp</dimen>
+    <dimen name="txt_s_small">12sp</dimen>
+
+    <dimen name="txt_hint_medium">17sp</dimen>
+    <dimen name="txt_hint_small">15sp</dimen>
 </resources>

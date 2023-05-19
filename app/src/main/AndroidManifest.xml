@@ -18,6 +18,10 @@
             android:label="@string/app_name"
             android:theme="@style/Theme.OMICall">
             <intent-filter>
+                <action android:name="com.omicall.sdk.CallingActivity"/>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -29,19 +33,20 @@
             android:showOnLockScreen="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.OMICall">
-            <intent-filter>
-                <action android:name="com.omicall.sdk.CallingActivity"/>
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
         </activity>
         <receiver
             android:name="vn.vihat.omicall.omisdk.receiver.FirebaseMessageReceiver"
             android:exported="true"
+            android:enabled="true"
             android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </receiver>
+        <service
+            android:name="vn.vihat.omicall.omisdk.service.NotificationService"
+            android:enabled="true"
+            android:exported="false">
+        </service>
     </application>
-
 </manifest>
