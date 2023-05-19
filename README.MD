@@ -185,6 +185,7 @@ You can refer <a href="https://github.com/VIHATTeam/OMICALL-Android-SDK-Example/
         missedCallTitle = "Cuộc gọi nhỡ",
         prefixMissedCallMessage = "Cuộc gọi nhỡ từ ",
         userNameKey = "uuid", //we have 3 values: uuid, full_name, extension.
+        channelId = "call.channel.sample" //custom your call notification channel id
     )
     //incomingAcceptButtonImage, incomingDeclineButtonImage, backImage, userImage: Add these into `android/app/src/main/res/drawble`
     ```
