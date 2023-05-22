@@ -28,7 +28,8 @@ class ExampleActivity : AppCompatActivity() {
 
     private val callListener = object : OmiListener {
 
-        override fun onCallEnd(callInfo: Any?) {
+        override fun onCallEnd(callInfo: Any?, statusCode: Int) {
+            Log.d("status code", statusCode.toString())
             EventBus.getDefault().post(CallEndEvent())
         }
 
@@ -87,8 +88,9 @@ class ExampleActivity : AppCompatActivity() {
             Log.d("aa", sip);
         }
 
-        override fun networkHealth(quality: Int) {
+        override fun networkHealth(mos: Float, quality: Int) {
             Log.d("aaaa", "quality $quality")
+            Log.d("aaaa", "mos $mos")
         }
     }
 

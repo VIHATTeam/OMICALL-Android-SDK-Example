@@ -16,7 +16,7 @@ Currently active maintenance and improve performance
 Install via build.gradle:
 
 ```
-api 'vn.vihat.omicall:omi-sdk:1.3.3'
+api 'vn.vihat.omicall:omi-sdk:1.3.6'
 ```
 
 ### Configuration
@@ -348,9 +348,22 @@ You can refer <a href="https://github.com/VIHATTeam/OMICALL-Android-SDK-Example/
             }
         }
 
-        override fun onCallEnd() {
-            EventBus.getDefault().post(CallEndEvent())
+        override fun onCallEnd(callInfo: Any?, statusCode: Int) {
+            //call information 
+            //statusCode is call ending reason.
         }
+        
+        /*Sample call info output:
+        {
+           "transaction_id":ea7dff38-cb1e-483d-8576...........,
+           "direction":"inbound",
+           "source_number":111,
+           "destination_number":110,
+           "time_start_to_answer":1682858097393,
+           "time_end":1682858152181,
+           "sip_user":111,
+           "disposition":"answered"
+        }*/
 
         override fun incomingReceived(callerId: Int, phoneNumber: String?, isVideo: Boolean?) {
             ///work only foreground
@@ -381,11 +394,13 @@ You can refer <a href="https://github.com/VIHATTeam/OMICALL-Android-SDK-Example/
 
         }
         
-        override fun networkHealth(quality: Int) {
+        override fun networkHealth(mos: Float, quality: Int) {
             //`quality` value: 
             //0 is GOOD
             //1 is NORMAL
             //2 is BAD
+            
+            //`mos` value is `mean opinion score`. 
         }
     }
  ```

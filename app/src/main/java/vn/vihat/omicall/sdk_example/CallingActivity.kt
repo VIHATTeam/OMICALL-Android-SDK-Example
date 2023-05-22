@@ -33,7 +33,6 @@ class CallingActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCallingBinding
     private var inComing: Boolean = false
-    private var addressString: String? = null
     private var phone: String? = null
     private var callId : Int = 0
     private val mainScope = CoroutineScope(Dispatchers.Main)
