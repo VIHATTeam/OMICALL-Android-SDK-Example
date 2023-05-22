@@ -42,7 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_marginVertical="@dimen/margin_small"
         android:layout_marginHorizontal="@dimen/margin_medium"
-        android:text="0ACE08B2F03BE1D6B3F7F5CCD34D9AC08CB92976E2AB6CEE6EA38C5C96F1B858"
+        android:text=""
         app:layout_constraintTop_toBottomOf="@id/txtUserId"/>
 
     <Switch

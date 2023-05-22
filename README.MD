@@ -16,7 +16,7 @@ Currently active maintenance and improve performance
 Install via build.gradle:
 
 ```
-api 'vn.vihat.omicall:omi-sdk:1.2.37'
+api 'vn.vihat.omicall:omi-sdk:1.3.3'
 ```
 
 ### Configuration
@@ -229,6 +229,70 @@ You can refer <a href="https://github.com/VIHATTeam/OMICALL-Android-SDK-Example/
     ```
     OmiClient.instance.sendDtmf(value);
     ```
+  - Get current user information:
+    ```
+    mainScope.launch {
+        var callResult: Any? = null
+        withContext(Dispatchers.Default) {
+            try {
+                callResult = OmiClient.instance.getCurrentUser()
+            } catch (_: Throwable) {
+
+            }
+        }
+    }
+    Output Sample:  
+    {
+        "extension": "111",
+        "full_name": "chau1",
+        "avatar_url": "",
+        "uuid": "122aaa"
+    }
+    ```
+  - Get guest user information:
+    ```
+    mainScope.launch {
+        var callResult: Any? = null
+        withContext(Dispatchers.Default) {
+            try {
+                callResult = OmiClient.instance.getIncomingCallUser()
+            } catch (_: Throwable) {
+
+            }
+        }
+    }
+    Output Sample:  
+    {
+        "extension": "111",
+        "full_name": "chau1",
+        "avatar_url": "",
+        "uuid": "122aaa"
+    }
+    ```
+  - Get user information from sip:
+    ```
+    mainScope.launch {
+        var callResult: Any? = null
+        withContext(Dispatchers.Default) {
+            try {
+                callResult = OmiClient.instance.getUserInfo("111")
+            } catch (_: Throwable) {
+
+            }
+        }
+    }
+    Output Sample:  
+    {
+        "extension": "111",
+        "full_name": "chau1",
+        "avatar_url": "",
+        "uuid": "122aaa"
+    }
+    ```
+  - Logout:
+    ```
+    OmicallClient.instance.logout();
+    ```
 - Video Call functions: Support only video call, We need enable video in `init functions` and `start call` to implements under functions.
   - Switch front/back camera: We use the front camera for first time.
   ```
@@ -316,6 +380,13 @@ You can refer <a href="https://github.com/VIHATTeam/OMICALL-Android-SDK-Example/
         override fun onVideoSize(width: Int, height: Int) {
 
         }
+        
+        override fun networkHealthy(quality: Int) {
+            //`quality` value: 
+            //0 is GOOD
+            //1 is NORMAL
+            //2 is BAD
+        }
     }
  ```
     - Method value: 
@@ -324,6 +395,7 @@ You can refer <a href="https://github.com/VIHATTeam/OMICALL-Android-SDK-Example/
         - `onCallEnd`: End a call.
         - `onHold`: `Comming soon....`
         - `onMuted`: `Comming soon...`
+        - `networkHealthy`: The calling quality.
     - Data value: We return `callerNumber`, `isVideo: true/false` information
 - Other events:
   - Account event: Listen account event

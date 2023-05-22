@@ -86,6 +86,10 @@ class ExampleActivity : AppCompatActivity() {
         override fun onSwitchBoardAnswer(sip: String) {
             Log.d("aa", sip);
         }
+
+        override fun networkHealthy(quality: Int) {
+            Log.d("aaaa", "quality $quality")
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)

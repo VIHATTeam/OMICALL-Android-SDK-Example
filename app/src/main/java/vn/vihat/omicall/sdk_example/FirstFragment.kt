@@ -71,7 +71,7 @@ class FirstFragment : Fragment(), OmiAccountListener {
 //                    "116",
 //                    password = "vWmFFBZwss",
 //                    true,
-//                    realm = "thaonguyennguyen1197",
+//                    realm = "",
 //                )
             } else {
                 Toast.makeText(requireContext(), R.string.omi_sdk_empty, Toast.LENGTH_LONG).show()
