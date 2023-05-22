@@ -87,7 +87,7 @@ class ExampleActivity : AppCompatActivity() {
             Log.d("aa", sip);
         }
 
-        override fun networkHealthy(quality: Int) {
+        override fun networkHealth(quality: Int) {
             Log.d("aaaa", "quality $quality")
         }
     }

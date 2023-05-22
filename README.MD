@@ -381,7 +381,7 @@ You can refer <a href="https://github.com/VIHATTeam/OMICALL-Android-SDK-Example/
 
         }
         
-        override fun networkHealthy(quality: Int) {
+        override fun networkHealth(quality: Int) {
             //`quality` value: 
             //0 is GOOD
             //1 is NORMAL
@@ -395,7 +395,7 @@ You can refer <a href="https://github.com/VIHATTeam/OMICALL-Android-SDK-Example/
         - `onCallEnd`: End a call.
         - `onHold`: `Comming soon....`
         - `onMuted`: `Comming soon...`
-        - `networkHealthy`: The calling quality.
+        - `networkHealth`: The calling quality.
     - Data value: We return `callerNumber`, `isVideo: true/false` information
 - Other events:
   - Account event: Listen account event
