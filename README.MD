@@ -115,6 +115,11 @@ You can refer <a href="https://github.com/VIHATTeam/OMICALL-Android-SDK-Example/
     android:enabled="true"
     android:exported="false">
 </service>
+
+//add these lines into application
+android:allowBackup="false"
+android:fullBackupContent="false"
+
 ```
 You can refer <a href="https://github.com/VIHATTeam/OMICALL-Android-SDK-Example/blob/main/app/src/main/AndroidManifest.xml">AndroidManifest</a> to know more informations.
 
@@ -185,7 +190,8 @@ You can refer <a href="https://github.com/VIHATTeam/OMICALL-Android-SDK-Example/
         missedCallTitle = "Cuộc gọi nhỡ",
         prefixMissedCallMessage = "Cuộc gọi nhỡ từ ",
         userNameKey = "uuid", //we have 3 values: uuid, full_name, extension.
-        channelId = "call.channel.sample" //custom your call notification channel id
+        channelId = "call.channel.sample", //custom your call notification channel id
+        ringtone = "calling_ringtone", //add this file in res/raw, if you don't want to custom it, just pass empty/null value.
     )
     //incomingAcceptButtonImage, incomingDeclineButtonImage, backImage, userImage: Add these into `android/app/src/main/res/drawble`
     ```
@@ -394,13 +400,13 @@ You can refer <a href="https://github.com/VIHATTeam/OMICALL-Android-SDK-Example/
 
         }
         
-        override fun networkHealth(mos: Float, quality: Int) {
+        override fun networkHealth(stat: Map<String, *>, quality: Int) {
             //`quality` value: 
             //0 is GOOD
             //1 is NORMAL
             //2 is BAD
             
-            //`mos` value is `mean opinion score`. 
+            //`stat` value is call information. 
         }
     }
  ```

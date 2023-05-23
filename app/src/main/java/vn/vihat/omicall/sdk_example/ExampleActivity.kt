@@ -85,12 +85,12 @@ class ExampleActivity : AppCompatActivity() {
         }
 
         override fun onSwitchBoardAnswer(sip: String) {
-            Log.d("aa", sip);
+            Log.d("aa", sip)
         }
 
-        override fun networkHealth(mos: Float, quality: Int) {
+        override fun networkHealth(stat: Map<String, *>, quality: Int) {
             Log.d("aaaa", "quality $quality")
-            Log.d("aaaa", "mos $mos")
+            Log.d("aaaa", "mos ${stat.toString()}")
         }
     }
 
@@ -154,7 +154,8 @@ class ExampleActivity : AppCompatActivity() {
             missedCallTitle = "Cuộc gọi nhỡ",
             prefixMissedCallMessage = "Cuộc gọi nhỡ từ ",
             userNameKey = "uuid",
-            channelId = "callchannelsample"
+            channelId = "callchannelsample",
+            ringtone = "calling_ringtone",
         )
     }
 
