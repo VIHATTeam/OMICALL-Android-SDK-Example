@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_big"
         android:hint="Phone"
-        android:text="110"
+        android:text="100"
         app:layout_constraintBottom_toTopOf="@id/btnCall"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

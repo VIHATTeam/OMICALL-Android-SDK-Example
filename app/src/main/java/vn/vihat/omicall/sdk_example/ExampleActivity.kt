@@ -18,80 +18,74 @@ import vn.vihat.omicall.omisdk.OmiClient
 import vn.vihat.omicall.omisdk.OmiListener
 import vn.vihat.omicall.omisdk.utils.SipServiceConstants
 import vn.vihat.omicall.sdk_example.databinding.ActivityExampleBinding
-import vn.vihat.omicall.sdk_example.event.CallEndEvent
-import vn.vihat.omicall.sdk_example.event.CallEstablishedEvent
+import vn.vihat.omicall.sdk_example.event.CallStateChange
+import vn.vihat.omicall.sdk_example.event.OmiCallState
 
-class ExampleActivity : AppCompatActivity() {
+class ExampleActivity : AppCompatActivity(), OmiListener {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityExampleBinding
 
-    private val callListener = object : OmiListener {
-
-        override fun onCallEnd(callInfo: Any?, statusCode: Int) {
-            Log.d("status code", statusCode.toString())
-            EventBus.getDefault().post(CallEndEvent())
-        }
-
-        override fun onCallEstablished(
-            callerId: Int,
-            phoneNumber: String?,
-            isVideo: Boolean?,
-            startTime: Long,
-            transactionId: String?,
-        ) {
-            if (CallingActivity.instance != null) {
-                EventBus.getDefault().post(CallEstablishedEvent())
-            } else {
-                val intent = Intent(applicationContext, CallingActivity::class.java)
-                intent.putExtra(SipServiceConstants.PARAM_NUMBER, phoneNumber)
-                intent.putExtra(CallingActivity.EXTRA_IN_COMING, false)
-                intent.putExtra(SipServiceConstants.PARAM_IS_VIDEO, isVideo ?: false)
-                startActivity(intent)
-            }
-        }
-
-        override fun incomingReceived(callerId: Int, phoneNumber: String?, isVideo: Boolean?) {
-            ///work only foreground
+    override fun onCallEstablished(
+        callerId: Int,
+        phoneNumber: String?,
+        isVideo: Boolean?,
+        startTime: Long,
+        transactionId: String?,
+    ) {
+        EventBus.getDefault().post(CallStateChange(OmiCallState.confirmed))
+        if (CallingActivity.instance == null) {
             val intent = Intent(applicationContext, CallingActivity::class.java)
             intent.putExtra(SipServiceConstants.PARAM_NUMBER, phoneNumber)
-            intent.putExtra(CallingActivity.EXTRA_IN_COMING, true)
+            intent.putExtra(CallingActivity.EXTRA_IN_COMING, false)
             intent.putExtra(SipServiceConstants.PARAM_IS_VIDEO, isVideo ?: false)
             startActivity(intent)
         }
+    }
 
-        override fun onOutgoingStarted(callerId: Int, phoneNumber: String?, isVideo: Boolean?) {
+    override fun onCallEnd(callInfo: MutableMap<String, Any?>, statusCode: Int) {
+        EventBus.getDefault().post(CallStateChange(OmiCallState.disconnected))
+    }
 
-        }
+    override fun incomingReceived(callerId: Int?, phoneNumber: String?, isVideo: Boolean?) {
+        ///only work foreground state
+        val intent = Intent(applicationContext, CallingActivity::class.java)
+        intent.putExtra(SipServiceConstants.PARAM_NUMBER, phoneNumber)
+        intent.putExtra(CallingActivity.EXTRA_IN_COMING, true)
+        intent.putExtra(SipServiceConstants.PARAM_IS_VIDEO, isVideo ?: false)
+        startActivity(intent)
+    }
 
-        override fun onMuted(isMuted: Boolean) {
+    override fun onOutgoingStarted(callerId: Int, phoneNumber: String?, isVideo: Boolean?) {
+        EventBus.getDefault().post(CallStateChange(OmiCallState.calling))
+    }
 
-        }
+    override fun onMuted(isMuted: Boolean) {
 
-        override fun onHold(isHold: Boolean) {
+    }
 
-        }
+    override fun onHold(isHold: Boolean) {
 
-        override fun onRinging() {
+    }
 
-        }
+    override fun onRinging(callerId: Int, transactionId: String?) {
+        EventBus.getDefault().post(CallStateChange(OmiCallState.early))
+    }
 
-        override fun onConnectionTimeout() {
+    override fun onConnecting() {
+        EventBus.getDefault().post(CallStateChange(OmiCallState.connecting))
+    }
 
-        }
+    override fun onVideoSize(width: Int, height: Int) {
 
-        override fun onVideoSize(width: Int, height: Int) {
+    }
 
-        }
+    override fun onSwitchBoardAnswer(sip: String) {
+        Log.d("aa", sip)
+    }
 
-        override fun onSwitchBoardAnswer(sip: String) {
-            Log.d("aa", sip)
-        }
-
-        override fun networkHealth(stat: Map<String, *>, quality: Int) {
-            Log.d("aaaa", "quality $quality")
-            Log.d("aaaa", "mos ${stat.toString()}")
-        }
+    override fun networkHealth(stat: Map<String, *>, quality: Int) {
+        Log.d("quality  ", quality.toString())
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -141,21 +135,15 @@ class ExampleActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_example)
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
-        OmiClient.instance.setListener(callListener)
+        OmiClient.instance.setListener(this)
         checkHasRegister()
         OmiClient.instance.configPushNotification(
             notificationIcon = "notification",
-            prefix = "Cuộc gọi tới từ: ",
-            incomingBackgroundColor = "#FFFFFFFF",
             incomingAcceptButtonImage = "join_call",
             incomingDeclineButtonImage = "hangup",
             backImage = "ic_back",
             userImage = "calling_face",
-            missedCallTitle = "Cuộc gọi nhỡ",
-            prefixMissedCallMessage = "Cuộc gọi nhỡ từ ",
-            userNameKey = "uuid",
-            channelId = "callchannelsample",
-            ringtone = "calling_ringtone",
+            channelId = "fcm_default_channel",
         )
     }
 

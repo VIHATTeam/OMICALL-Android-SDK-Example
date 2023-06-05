@@ -2,15 +2,12 @@ package vn.vihat.omicall.sdk_example
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.preference.PreferenceManager
 import android.util.Log
 import android.view.Surface
 import android.view.View
-import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.CoroutineScope
@@ -26,16 +23,16 @@ import vn.vihat.omicall.omisdk.utils.SipServiceConstants
 import vn.vihat.omicall.omisdk.videoutils.ScaleManager
 import vn.vihat.omicall.omisdk.videoutils.Size
 import vn.vihat.omicall.sdk_example.databinding.ActivityCallingBinding
-import vn.vihat.omicall.sdk_example.event.CallEndEvent
-import vn.vihat.omicall.sdk_example.event.CallEstablishedEvent
+import vn.vihat.omicall.sdk_example.event.CallStateChange
+import vn.vihat.omicall.sdk_example.event.OmiCallState
 
 class CallingActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCallingBinding
-    private var inComing: Boolean = false
     private var phone: String? = null
     private var callId : Int = 0
     private val mainScope = CoroutineScope(Dispatchers.Main)
+    private var hasConnect = false
 
     private fun setUIFromStatus(isInComing: Boolean) {
         if (isInComing) {
@@ -67,36 +64,57 @@ class CallingActivity : AppCompatActivity() {
         }
     }
 
-    // This method will be called when a SomeOtherEvent is posted
-    @Subscribe
-    fun onCallEstablishedEvent(event: CallEstablishedEvent) {
-        setUIFromStatus(false)
-        if (NotificationService.isVideo) {
-            binding.localTextureView.surfaceTexture?.let {
-                OmiClient.instance.setupLocalVideoFeed(Surface(it))
-//            binding.localTextureView.setBackgroundColor(Color.TRANSPARENT);
-                ScaleManager.adjustAspectRatio(
-                    binding.localTextureView,
-                    Size(binding.localTextureView.width, binding.localTextureView.height),
-                    Size(1280, 720)
-                )
-            }
-            binding.remoteTextureView.surfaceTexture?.let {
-                OmiClient.instance.setupIncomingVideoFeed(Surface(it))
-//            binding.remoteTextureView.setBackgroundColor(Color.TRANSPARENT);
-
-                ScaleManager.adjustAspectRatio(
-                    binding.remoteTextureView,
-                    Size(binding.remoteTextureView.width, binding.remoteTextureView.height),
-                    Size(1280, 720)
-                )
-            }
+    private fun setStatusFromInt(state: OmiCallState) {
+        if (state == OmiCallState.calling) {
+            binding.lblStatus.text = "Chờ kết nối!"
+        }
+        if (state == OmiCallState.early) {
+            binding.lblStatus.text = "Đang đổ chuông"
+        }
+        if (state == OmiCallState.connecting) {
+            binding.lblStatus.text = "Đang chờ kết nối"
+        }
+        if (state == OmiCallState.confirmed) {
+            binding.lblStatus.text = "Đã kết nối"
+        }
+        if (state == OmiCallState.disconnected) {
+            binding.lblStatus.text = "Ngắt kết nối"
+        }
+        if (state == OmiCallState.incoming) {
+            binding.lblStatus.text = "Có gọi tới!"
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onCallEndEvent(event: CallEndEvent) {
-        finish()
+    fun onCallStateChange(event: CallStateChange) {
+        val state = event.state
+        setStatusFromInt(state)
+        if (state == OmiCallState.confirmed) {
+            hasConnect = true
+            setUIFromStatus(false)
+            if (NotificationService.isVideo) {
+                binding.localTextureView.surfaceTexture?.let {
+                    OmiClient.instance.setupLocalVideoFeed(Surface(it))
+                    ScaleManager.adjustAspectRatio(
+                        binding.localTextureView,
+                        Size(binding.localTextureView.width, binding.localTextureView.height),
+                        Size(1280, 720)
+                    )
+                }
+                binding.remoteTextureView.surfaceTexture?.let {
+                    OmiClient.instance.setupIncomingVideoFeed(Surface(it))
+                    ScaleManager.adjustAspectRatio(
+                        binding.remoteTextureView,
+                        Size(binding.remoteTextureView.width, binding.remoteTextureView.height),
+                        Size(1280, 720)
+                    )
+                }
+            }
+            return
+        }
+        if (state == OmiCallState.disconnected) {
+            finish()
+        }
     }
 
 
@@ -113,16 +131,19 @@ class CallingActivity : AppCompatActivity() {
         binding = ActivityCallingBinding.inflate(layoutInflater)
         setContentView(binding.root)
         phone = intent?.getStringExtra(SipServiceConstants.PARAM_NUMBER)
-        inComing = intent!!.getBooleanExtra(EXTRA_IN_COMING, false)
+        val isIncoming = intent!!.getBooleanExtra(EXTRA_IN_COMING, false)
         callId = intent?.getIntExtra(SipServiceConstants.PARAM_CALL_ID,0) ?: 0
-        inComing = intent!!.getBooleanExtra(EXTRA_IN_COMING, false)
-        setUIFromStatus(inComing)
+        setUIFromStatus(isIncoming)
         instance = this
         binding.backButton.setOnClickListener {
-            OmiClient.instance.hangUp()
+            if (hasConnect) {
+                OmiClient.instance.hangUp()
+            } else {
+                OmiClient.instance.decline()
+            }
             finish()
         }
-        if (inComing) {
+        if (isIncoming) {
             binding.acceptCallBt.setOnClickListener {
                 OmiClient.instance.pickUp()
             }
@@ -130,20 +151,21 @@ class CallingActivity : AppCompatActivity() {
             Handler(Looper.getMainLooper()).postDelayed(Runnable {
                 binding.localTextureView.surfaceTexture?.let {
                     OmiClient.instance.setupLocalVideoFeed(Surface(it))
-//            binding.localTextureView.setBackgroundColor(Color.TRANSPARENT);
                     ScaleManager.adjustAspectRatio(binding.localTextureView,Size(binding.localTextureView.width,binding.localTextureView.height),Size(1280,720))
                 }
                 binding.remoteTextureView.surfaceTexture?.let {
                     OmiClient.instance.setupIncomingVideoFeed(Surface(it))
-//            binding.remoteTextureView.setBackgroundColor(Color.TRANSPARENT);
-
                     ScaleManager.adjustAspectRatio(binding.remoteTextureView,Size(binding.remoteTextureView.width,binding.remoteTextureView.height),Size(1280,720))
                 }
             }, 500)
         }
 
         binding.hangupButtonWhenConfirm.setOnClickListener {
-            OmiClient.instance.hangUp()
+            if (hasConnect) {
+                OmiClient.instance.hangUp()
+            } else {
+                OmiClient.instance.decline()
+            }
             instance = null
             finish()
         }
@@ -177,17 +199,18 @@ class CallingActivity : AppCompatActivity() {
         }
 
         binding.moreButton.setOnClickListener {
-            val builder = AlertDialog.Builder(this)
-            with(builder) {
-                setItems(arrayOf("Audio input devices", "Audio output devices")) { dialog, which ->
-                    if (which < 1) {
-                        showAudioInputs()
-                    } else {
-                        showAudioOutputs()
-                    }
-                }
-                show()
-            }
+//            val builder = AlertDialog.Builder(this)
+//            with(builder) {
+//                setItems(arrayOf("Audio input devices", "Audio output devices")) { dialog, which ->
+//                    if (which < 1) {
+//                        showAudioInputs()
+//                    } else {
+//                        showAudioOutputs()
+//                    }
+//                }
+//                show()
+//            }
+            OmiClient.instance.forwardCallTo("100");
         }
     }
 

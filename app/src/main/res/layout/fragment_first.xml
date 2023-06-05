@@ -22,7 +22,7 @@
         android:layout_marginVertical="@dimen/margin_small"
         android:layout_marginHorizontal="@dimen/margin_medium"
         android:hint="User Name"
-        android:text="chau4"
+        android:text="103"
         app:layout_constraintTop_toBottomOf="@id/txtTitle"/>
 
     <EditText
@@ -32,7 +32,7 @@
         android:layout_marginHorizontal="@dimen/margin_medium"
         android:layout_marginVertical="@dimen/margin_small"
         android:hint="User Id"
-        android:text="124aaa"
+        android:text="a7JoGYJbJQ"
         app:layout_constraintTop_toBottomOf="@id/txtUserName"
         tools:layout_editor_absoluteX="8dp" />
 
@@ -42,7 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_marginVertical="@dimen/margin_small"
         android:layout_marginHorizontal="@dimen/margin_medium"
-        android:text=""
+        android:text="devtestcallbot"
         app:layout_constraintTop_toBottomOf="@id/txtUserId"/>
 
     <Switch
@@ -53,6 +53,7 @@
         android:id="@+id/switchIsVideo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:checked="true"
         android:text="Video call" />
 
     <Button

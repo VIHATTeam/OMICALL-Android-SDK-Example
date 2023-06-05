@@ -32,7 +32,7 @@ class FirstFragment : Fragment(), OmiAccountListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
 
         _binding = FragmentFirstBinding.inflate(inflater, container, false)
         return binding.root
@@ -48,31 +48,32 @@ class FirstFragment : Fragment(), OmiAccountListener {
                     binding.txtApiKey,
                 ).none { it.text.isNullOrEmpty() }
             ) {
-                mainScope.launch {
-                    withContext(Dispatchers.Default) {
-                        try {
-                            val result = OmiClient.registerWithApiKey(
-                                "${binding.txtApiKey.text}",
-                                "${binding.txtUserName.text}",
-                                "${binding.txtUserId.text}",
-                                binding.switchIsVideo.isChecked,
-                            )
-                            if (result) {
-                                findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
-                            }
-                        }
-                        catch (_: Throwable) {
-
-                        }
-                    }
-
-                }
-//                val result = OmiClient.register(
-//                    "116",
-//                    password = "vWmFFBZwss",
-//                    true,
-//                    realm = "",
-//                )
+//                mainScope.launch {
+//                    withContext(Dispatchers.Default) {
+//                        try {
+//                            val result = OmiClient.registerWithApiKey(
+//                                "${binding.txtApiKey.text}",
+//                                "${binding.txtUserName.text}",
+//                                "${binding.txtUserId.text}",
+//                                binding.switchIsVideo.isChecked,
+//                            )
+//                            if (result) {
+//                                findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+//                            }
+//                        }
+//                        catch (_: Throwable) {
+//
+//                        }
+//                    }
+//
+//                }
+                val result = OmiClient.register(
+                    "${binding.txtUserName.text}",
+                    "${binding.txtUserId.text}",
+                    "${binding.txtApiKey.text}",
+                    binding.switchIsVideo.isChecked,
+                )
+                findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
             } else {
                 Toast.makeText(requireContext(), R.string.omi_sdk_empty, Toast.LENGTH_LONG).show()
             }
